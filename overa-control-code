@@ -1,0 +1,51 @@
+雾化块雾化， 输送泵加药， 推杆运动， 风扇转动， 环境检测整体控制代码#define base_open_signal 0
+#define open_signal 2 #define close_signal 3
+#define electric_push_rod_stretch_out 12
+#define electric_push_rod_take_back 11
+#define aromizer 6
+#define fans 8
+#define pump 9
+
+void setup() {
+pinMode(open_signal,INPUT);
+pinMode(close_signal,INPUT);
+pinMode(electric_push_rod_stretch_out,OUTPUT);
+pinMode(electric_push_rod_take_back,OUTPUT);
+pinMode(aromizer,OUTPUT);
+pinMode(fans,OUTPUT);
+pinMode(pump,OUTPUT);
+
+digitalWrite(electric_push_rod_stretch_out,LOW);
+digitalWrite(electric_push_rod_take_back,LOW);
+digitalWrite(aromizer,LOW);
+digitalWrite(fans,LOW);
+digitalWrite(pump,LOW);
+delay(10000);
+Serial.begin(9600); }
+
+void loop() {
+while(digitalRead(open_signal)==HIGH){
+digitalWrite(electric_push_rod_stretch_out,HIGH);
+digitalWrite(aromizer,HIGH);
+digitalWrite(fans,HIGH);
+Serial.print("open");
+
+delay(10000);
+digitalWrite(electric_push_rod_stretch_out,LOW);
+digitalWrite(electric_push_rod_take_back,HIGH);
+delay(10000);
+}
+
+while(digitalRead(close_signal)==HIGH){ Serial.print("close");
+digitalWrite(aromizer,LOW);
+digitalWrite(fans,LOW);
+digitalWrite(electric_push_rod_take_back,LOW);
+delay(100);
+digitalWrite(electric_push_rod_stretch_out,HIGH);
+delay(5000);
+digitalWrite(pump,HIGH);
+delay(5000);
+digitalWrite(pump,LOW);
+delay(10000);
+}
+}
