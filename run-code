@@ -1,0 +1,43 @@
+运动代码：
+<!-- Arguments 参数 -->
+<arg name="car_mode"    default="mini_mec"
+doc="opt: mini_akm,senior_akm,top_akm_bs,top_akm_dl,
+
+mini_mec,senior_mec_bs,senior_mec_dl,top_mec_bs,top_mec_dl,senior_mec_EightDrive,top
+_mec_EightDrive,
+flagship_mec_bs,flagship_mec_dl, mini_omni,senior_omni,top_omni,
+
+mini_4wd,senior_4wd_bs,senior_4wd_dl,top_4wd_bs,top_4wd_dl,flagship_4wd_bs,flagship_ 4wd_dl,
+
+mini_tank,mini_diff,senior_diff,four_wheel_diff_bs,four_wheel_diff_dl,flagship_four_wheel _diff_dl,flagship_four_wheel_diff_bs,
+brushless_senior_diff,
+mini_tank_moveit_four,mini_4wd_moveit_four,mini_mec_moveit_four, mini_mec_moveit_six,mini_4wd_moveit_six"/>
+
+<!--是否开启导航功能 在导航相关文件中开启 此处默认不开启--> <arg name="navigation"    default="false"/>
+<arg name="pure3d_nav"    default="false"/>
+
+<!-- turn on base_serial  开启底层单片机的控制节点   -->
+<include        file="$(find         turn_on_wheeltec_robot)/launch/include/base_serial.launch" unless="$(arg repeat)">
+<arg name="odom_frame_id"    value="$(arg odom_frame_id)"/> </include>
+</group>
+
+<group                   if="$(eval                   (car_mode=='mini_mec_moveit_six'                   or
+car_mode=='mini_4wd_moveit_six') and if_voice==true)" >
+
+<!--当开启导航功能时 启用导航算法选择--> <!--当开启 2D 导航功能时-->
+<!--  开启 teb_local_planner 导航算法  与 dwa 算法相比效果更佳-->
+<include   file="$(find   turn_on_wheeltec_robot)/launch/include/teb_local_planner.launch" if="$(arg navigation)">
+<!--  开启 dwa_local_planner 导航算法-->
+<!--                                                      <include                                                      file="$(find
+turn_on_wheeltec_robot)/launch/include/dwa_local_planner.launch"  if="$(arg  navigation)"> -->
+<arg name="car_mode" value="$(arg car_mode)"/> </include>
+
+<!--  发布用于建图 、导航的 TF 关系与小车外形可视化  -->
+<include  file="$(find  turn_on_wheeltec_robot)/launch/robot_model_visualization.launch" unless="$(arg repeat)">
+<arg name="car_mode" value="$(arg car_mode)"/>
+<arg name="if_voice" value="$(arg if_voice)"/> </include>
+
+<!--  扩张 卡尔曼 滤波  发布 odom_combined 到 footprint 的 TF, 即小 车定位  使 用cartographer 算法时不使用该滤波算法-->
+<include     file="$(find    turn_on_wheeltec_robot)/launch/include/robot_pose_ekf.launch" unless="$(arg repeat)">
+<arg name="is_cartographer" value="$(arg is_cartographer)"/>
+</include>
